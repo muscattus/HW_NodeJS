@@ -26,12 +26,12 @@ app.get('/', function(req, res) {
 });
 app.get('/api/list', function(req, res) {
     log.info('/api/list');
-    res.end(list);
+    res.end(JSON.stringify(list));
 });
 
 app.get('/api/list/:id', function(req, res) {
     log.info('/api/list/:id');
-    console.log(res.params.id);
+    console.log(req.params.id);
     res.end();
 });
 
