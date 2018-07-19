@@ -25,20 +25,20 @@ app.get('/', function(req, res) {
     res.sendFile(path.resolve( __dirname , 'index.html' ));
 });
 app.get('/api/list', function(req, res) {
-    log.info('/api/list');
+    log.info('==Get all list articles==');
     res.end(JSON.stringify(list));
 });
 
 app.get('/api/list/:id', function(req, res) {
-    log.info('/api/list/:id');
-    console.log(req.params.id);
-    res.end();
+    log.info('==Get article by id==');
+    const articleById = list.find(article => +article.id === +req.params.id);
+    res.end(JSON.stringify(articleById));
 });
 
 app.post('/api/create-article', function(req, res) {
-    log.info('/api/create-article');
-    console.log(req.body);
-    res.end();
+    log.info('==Save article==');
+    list.push(req.body);
+    res.end(JSON.stringify(list));
 });
 
 //listen our post, 3000
