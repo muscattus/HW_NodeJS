@@ -9,6 +9,9 @@ const config = require( INCPATH + '/config' ); //our common config
 const log = require( INCPATH + '/log')(module); //log is a function. which is called with the current model to which
 // it is connected
 const cors = require('cors');//https://github.com/expressjs/cors
+const swaggerUi = require('swagger-ui-express');
+const YAML = require('yamljs');
+const swaggerDocument = YAML.load('./config/swagger.yaml');
 // const apiConfig = require(ABSPATH + '/api');
 
 let list = [];
@@ -19,6 +22,7 @@ app.use(cors());
 app.use(express.static(__dirname)); //reading static files
 app.use(express.json()); //initialize json parser
 app.use(express.urlencoded({ extended: true })); //pars url
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 //getting static file
 app.get('/', function(req, res) {
