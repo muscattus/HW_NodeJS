@@ -13,7 +13,6 @@ router.get("/some-request", function(req, res) {
             log.error('Error find users in Mongo');
         }
         log.info('Users finds');
-        console.log(users);
         res.end(JSON.stringify(users));
     });
 });

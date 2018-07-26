@@ -12,10 +12,18 @@ const cors = require('cors');//https://github.com/expressjs/cors
 const swaggerUi = require('swagger-ui-express');
 const YAML = require('yamljs');
 const swaggerDocument = YAML.load('./config/swagger.yaml');
+const fs = require('fs');
+
+let list;
+
+fs.readFile('./config/articles.json', 'utf8', function (err,data) {
+    if (err) {
+        return console.log(err);
+    }
+    list = data;
+    list = JSON.parse(list);
+});
 // const apiConfig = require(ABSPATH + '/api');
-
-let list = [];
-
 // app.use ->  this is middleware
 app.use(cors());
 // app.use('/api', apiConfig);
