@@ -12,17 +12,11 @@ const cors = require("cors"); //https://github.com/expressjs/cors
 const swaggerUi = require("swagger-ui-express");
 const YAML = require("yamljs");
 const swaggerDocument = YAML.load("./config/swagger.yaml");
-const fs = require("fs");
 
-let list;
+const { nextTick } = require("process");
+const routes = require("./routes");
 
-fs.readFile("./config/articles.json", "utf8", function(err, data) {
-  if (err) {
-    return console.log(err);
-  }
-  list = data;
-  list = JSON.parse(list);
-});
+
 
 
 // const apiConfig = require(ABSPATH + '/api');
@@ -35,33 +29,42 @@ app.use(express.urlencoded({ extended: true })); //pars url
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
+// app.get("/dog", routes.get);
+// app.post("/dog", routes.post);
+
+// app.use("/dog", (req, res, next) => console.log('GREATER THAN 5'));
+
 //getting static file
 app.get("/", function(req, res) {
+  log.info("==INDEX==");
   res.sendFile(path.resolve(__dirname, "index.html"));
 });
 
-app.get("/api/articles", function(req, res) {
-  log.info("==Get all list articles==");
-  res.end(JSON.stringify(list));
-});
+app.use("/api", routes);
 
-app.post("/api/articles", function(req, res) {
-  log.info("==Save article==");
-  list.push(req.body);
-  res.end(JSON.stringify(list));
-});
+// app.get("/api/articles", function(req, res) {
+//   log.info("==Get all list articles==");
+//   res.end(JSON.stringify(list));
+// });
 
-app.get("/api/articles/:id", function(req, res) {
-  log.info("==Get article by id==");
-  const articleById = list.find(article => +article.id === +req.params.id);
-  res.end(JSON.stringify(articleById));
-});
+// app.post("/api/articles", function(req, res) {
+//   log.info("==Save article==");
+//   list.push(req.body);
+//   res.end(JSON.stringify(list));
+// });
 
-app.delete("/api/articles/:id", function (req, res) {
-    log.info('==Delete article by id==');
-    const articleById = list.findIndex(article => +article.id === +req.params.id);
-    console.log(articleById);
-});
+// app.get("/api/articles/:id", function(req, res) {
+//   log.info("==Get article by id==");
+//   const articleById = list.find(article => +article.id === +req.params.id);
+//   console.log(req);
+//   res.end(JSON.stringify(articleById));
+// });
+
+// app.delete("/api/articles/:id", function (req, res) {
+//     log.info('==Delete article by id==');
+//     const articleById = list.findIndex(article => +article.id === +req.params.id);
+//     console.log(articleById);
+// });
 
 //listen our post, 3000
 app.listen(config.get("port"), function() {
