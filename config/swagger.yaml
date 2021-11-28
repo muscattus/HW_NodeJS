@@ -14,18 +14,18 @@ info:
     url: 'http://www.apache.org/licenses/LICENSE-2.0.html'
 tags:
   - name: Articles
-    description: Some list
+    description: Articles list
 paths:
-  /api/list:
+  /api/articles:
     get:
       tags:
         - Articles
-      summary: searches article
+      summary: Search all articles
       operationId: searchArticle
-      description: search articles list
+      description: Search all articles
       responses:
         '200':
-          description: search results matching criteria
+          description: Search all articles
           content:
             application/json:
               schema:
@@ -34,12 +34,63 @@ paths:
                   $ref: '#/components/schemas/Article'
         '400':
           description: bad input parameter
-  /api/list/{id}:
+    post:
+      tags:
+        - Articles
+      summary: Add new article
+      operationId: addArticle
+      description: Add new article
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - description
+              properties:
+                title:
+                  type: string
+                  example: Cat crusaders
+                description:
+                  type: string
+                  example: Intergalactic cats crusade against martians
+        description: Article to add
+      responses:
+        '201':
+          description: Articles list with a new article
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Article'
+        '400':
+          description: 'invalid input, object invalid'
+    delete:
+      tags:
+        - Articles
+      summary: Delete all articles
+      operationId: deleteArticle
+      description: Delete all articles
+      responses:
+        '200':
+          description: Empty array, all articles deleted
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  example: 
+        '400':
+          description: bad input parameter
+  /api/articles/{id}:
     get:
       tags:
         - Articles
-      summary: searches article by id
+      summary: Search article by id
       operationId: searchArticleByID
+      description: Search article by id
       parameters:
        - name: id
          in: path
@@ -51,7 +102,43 @@ paths:
       description: search article by ID
       responses:
         '200':
-          description: search results matching criteria
+          description: Search results matching criteria
+          content:
+            application/json:
+              schema:
+                type: object
+                $ref: '#/components/schemas/Article'
+        '400':
+          description: Article not found
+    patch:
+      tags:
+        - Articles
+      summary: Update article by id
+      operationId: updateArticleByID
+      description: Update article by id
+      parameters:
+       - name: id
+         in: path
+         description: ID of article to update
+         required: true
+         schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - description
+              properties:
+                description:
+                  type: string
+                  example: Intergalactic cats crusade against martians
+        description: Article to add
+      responses:
+        '200':
+          description: Articles list with an updated article
           content:
             application/json:
               schema:
@@ -59,37 +146,62 @@ paths:
                 items:
                   $ref: '#/components/schemas/Article'
         '400':
-          description: bad input parameter
-  /api/create-article:
-    post:
+          description: Article not found
+    delete:
       tags:
         - Articles
-      summary: add new article
-      operationId: addArticle
-      description: Add new article
+      summary: Delete article by id
+      operationId: deleteArticle
+      description: Delete article by id
+      parameters:
+       - name: id
+         in: path
+         description: ID of article to delete
+         required: true
+         schema:
+            type: integer
+            format: int64
+      description: Delete article by ID
       responses:
         '201':
-          description: item created
+          description: Articles list without a deleted article
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Article'
         '400':
-          description: 'invalid input, object invalid'
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/Article'
-        description: Article to add
+          description: Article not found
+
+definitions:
+  Article:
+    type: object
+    required:
+      - description
+    properties:
+      description:
+        type: string
 components:
   schemas:
     Article:
       type: object
       required:
         - id
-        - name
+        - title
+        - description
       properties:
         id:
+          type: integer
+          format: int64
+          example: 1
+        title:
           type: string
-          format: uuid
-          example: d290f1ee-6c54-4b01-90e6-d701748f0851
-        name:
+          example: Space Cat
+        description:
           type: string
-          example: Widget Adapter
+          example: Cat has landed on the Moon
+    Articles:
+      type: array
+      items: 
+        $ref: '#/components/schemas/Article'
