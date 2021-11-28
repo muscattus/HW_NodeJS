@@ -8,18 +8,18 @@ const { body, validationResult } = require('express-validator');
 let list;
 
 fs.readFile("./config/articles.json", "utf8", function(err, data) {
-  if (err) {
-    return console.log(err);
-  }
-  list = data;
-  list = JSON.parse(list);
+    if (err) {
+        return console.log(err);
+    }
+    list = data;
+    list = JSON.parse(list);
 });
 
 
 router.get("/articles", function(req, res) {
     log.info("==Get all list articles==");
     res.end(JSON.stringify(list));
-  });
+});
 
   router.get("/articles/:id", function(req, res) {
     log.info("==Get article by id==");
@@ -50,24 +50,25 @@ router.post("/articles", [
 });
   
 router.delete("/articles/:id", function (req, res) {
-      log.info('==Delete article by id==');
-      const articleById = list.findIndex(article => +article.id === +req.params.id);
-      if (articleById < 0) {
+    log.info('==Delete article by id==');
+    const articleById = list.findIndex(article => +article.id === +req.params.id);
+    if (articleById < 0) {
         return res.status(404).json({error: 'Article not found'});
-        }
-      list.splice(articleById, 1);
-      res.end(JSON.stringify(list));
+    }
+    list.splice(articleById, 1);
+    res.end(JSON.stringify(list));
 });
+
 router.delete("/articles/", function (req, res) {
-      log.info('==Delete all articles==');
-      list = [];
-      fs.writeFile('./config/articles.json', JSON.stringify(list), (err) => console.log(err));
-      res.end(JSON.stringify(list));
+    log.info('==Delete all articles==');
+    list = [];
+    fs.writeFile('./config/articles.json', JSON.stringify(list), (err) => console.log(err));
+    res.end(JSON.stringify(list));
 });
 
 router.patch("/articles/:id",  [
     body('description').exists()
-                .withMessage('Is missing')
+    .withMessage('Is missing')
 ], function(req, res) {
     const errors = {errors: validationResult(req).array()};
     if (!validationResult(req).isEmpty()) {
