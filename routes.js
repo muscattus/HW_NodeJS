@@ -21,18 +21,20 @@ router.get("/articles", function(req, res) {
     res.end(JSON.stringify(list));
   });
 
-router.get("/articles/:id", function(req, res) {
+  router.get("/articles/:id", function(req, res) {
     log.info("==Get article by id==");
     const articleById = list.find(article => +article.id === +req.params.id);
-    console.log(req);
+    if (!articleById) {
+        return res.status(404).json({error: 'Article not found'});
+    }
     res.end(JSON.stringify(articleById));
-  });
-  
+});
+
 router.post("/articles", [
     body('title').exists()
-                .withMessage('Is missing'),
+    .withMessage('Is missing'),
     body('description').exists()
-                .withMessage('Is missing')
+    .withMessage('Is missing')
 ], function(req, res) {
     const errors = {errors: validationResult(req).array()};
     
@@ -43,20 +45,23 @@ router.post("/articles", [
     const article = req.body;
     article.id = getMaxId(list) + 1;
     list.push(article);
+    fs.writeFile('./config/articles.json', JSON.stringify(list), (err) => console.log(err));
     res.end(JSON.stringify(list));
-});
-  
-router.get("/articles/:id", function(req, res) {
-    log.info("==Get article by id==");
-    const articleById = list.find(article => +article.id === +req.params.id);
-    console.log(req);
-    res.end(JSON.stringify(articleById));
 });
   
 router.delete("/articles/:id", function (req, res) {
       log.info('==Delete article by id==');
       const articleById = list.findIndex(article => +article.id === +req.params.id);
+      if (articleById < 0) {
+        return res.status(404).json({error: 'Article not found'});
+        }
       list.splice(articleById, 1);
+      res.end(JSON.stringify(list));
+});
+router.delete("/articles/", function (req, res) {
+      log.info('==Delete all articles==');
+      list = [];
+      fs.writeFile('./config/articles.json', JSON.stringify(list), (err) => console.log(err));
       res.end(JSON.stringify(list));
 });
 
@@ -71,9 +76,14 @@ router.patch("/articles/:id",  [
     log.info('==Update article by id==');
     const articleDescription = req.body.description;
     const articleById = list.find(article => +article.id === +req.params.id);
+    if (!articleById) {
+        return res.status(404).json({error: 'Article not found'});
+    }
     articleById.description = articleDescription;
+    fs.writeFile('./config/articles.json', JSON.stringify(list), (err) => console.log(err));
     res.send(JSON.stringify(list));
 })
+
 
 function sendError(errors, res) {
     log.info("==Invalid parameters, cannot save==");
